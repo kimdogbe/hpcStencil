@@ -8,6 +8,8 @@ intial running times gcc version 4.8.4 (GCC)
 1024X1024 -O3 = runtime: 6.800617 s
 1024X1024 -O3 =  runtime: ***2.279817 s*** (after division replaced with values eg 0.5/5 = 0.1)
 
+1024X1024 -O3 = runtime: 2.387568 s (after values replaced by variables initialised once eg: nyMult, position so slowdown.)
+
 
 initial running times gcc version 4.8.4 (GCC)
 4096x4096 O0 = runtime: 315.633268 s
