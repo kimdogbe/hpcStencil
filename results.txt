@@ -1,13 +1,18 @@
 intial running times gcc version 4.8.4 (GCC)
-1024X1024 O0 = runtime: 8.176693 s
-1024X1024 O1 = runtime: 6.806797 s
-1024X1024 O2 = runtime: 6.796155 s
-1024X1024 O3 = runtime: 6.800617 s
+1024X1024 -O0 = runtime: 8.176693 s
+1024X1024 -O0 = runtime: 6.170395 s (after division replaced with values eg 0.5/5 = 0.1)
+1024X1024 -O1 = runtime: 6.806797 s
+1024X1024 -O1 =  runtime: ***2.443973 s*** (after division replaced with values eg 0.5/5 = 0.1)
+1024X1024 -O2 = runtime: 6.796155 s
+1024X1024 -O2 =  runtime: ***2.581174 s*** (after division replaced with values eg 0.5/5 = 0.1)
+1024X1024 -O3 = runtime: 6.800617 s
+1024X1024 -O3 =  runtime: ***2.279817 s*** (after division replaced with values eg 0.5/5 = 0.1)
+
 
 initial running times gcc version 4.8.4 (GCC)
-4096x4096 O0 = runtime:
-4096x4096 O1 = runtime:
-4096x4096 O2 = runtime:
+4096x4096 O0 = runtime: 315.633268 s
+4096x4096 O1 = runtime: 127.486453 s
+4096x4096 O2 = runtime: 116.705168 s
 4096x4096 O3 = runtime:
 
 initial running times gcc version 4.8.4 (GCC)
