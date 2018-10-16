@@ -1,3 +1,2 @@
 stencil: stencil.c
-	gcc -std=c99 -Wall $^ -o $@
-
+	gcc -02 -g -pg -static-libgcc -std=c99 -Wall $^ -o $@

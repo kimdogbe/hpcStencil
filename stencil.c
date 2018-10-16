@@ -49,7 +49,6 @@ int main(int argc, char *argv[]) {
   free(image);
 }
 
-//test git
 void stencil(const int nx, const int ny, double *  image, double *  tmp_image) {
   for (int j = 0; j < ny; ++j) {
     for (int i = 0; i < nx; ++i) {
