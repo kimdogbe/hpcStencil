@@ -53,10 +53,10 @@ void stencil(const int nx, const int ny, double *  image, double *  tmp_image) {
 
   int position, nyMult;
 
-  for (int j = 0; j < ny; ++j) {
-    for (int i = 0; i < nx; ++i) {
+  for (int i = 0; i < nx; ++i) {
+    nyMult = i*ny;
+    for (int j = 0; j < ny; ++j) {
 
-      nyMult = i*ny;
       position = j+nyMult;
 
       tmp_image[position] = image[position] * 0.6;
