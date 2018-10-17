@@ -13,6 +13,8 @@ intial running times gcc version 4.8.4 (GCC)
 1024x1024 -O3 = runtime: 0.858968 s (after reversing loop order)
 
 1024x1024 -O3 = runtime: 0.625596 s (after changing data types to smaller version)
+1024x1024 -O3 = runtime: 0.574890 s
+
 
 initial running times gcc version 4.8.4 (GCC)
 4096x4096 O0 = runtime: 315.633268 s
