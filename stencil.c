@@ -6,9 +6,9 @@
 // Define output file name
 #define OUTPUT_FILE "stencil.pgm"
 
-void stencil(const int nx, const int ny, double *  image, double *  tmp_image);
-void init_image(const int nx, const int ny, double *  image, double *  tmp_image);
-void output_image(const char * file_name, const int nx, const int ny, double *image);
+void stencil(unsigned short nx, unsigned short ny, double * restrict  image, double * restrict  tmp_image);
+void init_image(unsigned short nx, unsigned short ny, double * restrict  image, double * restrict  tmp_image);
+void output_image(const char * file_name, unsigned short nx, unsigned short ny, double * restrict  image);
 double wtime(void);
 
 int main(int argc, char *argv[]) {
@@ -49,30 +49,25 @@ int main(int argc, char *argv[]) {
   free(image);
 }
 
-void stencil(const int nx, const int ny, double *  image, double *  tmp_image) {
+void stencil(unsigned short nx, unsigned short ny, double * restrict  image, double * restrict  tmp_image) {
 
-  int position, nyMult;
+  for (unsigned short i = 0; i < nx; ++i) {
+    for (unsigned short j = 0; j < ny; ++j) {
 
-  for (int i = 0; i < nx; ++i) {
-    nyMult = i*ny;
-    for (int j = 0; j < ny; ++j) {
-
-      position = j+nyMult;
-
-      tmp_image[position] = image[position] * 0.6;
-      if (i > 0)    tmp_image[position] += image[j   + nyMult - ny] * 0.1;
-      if (i < nx-1) tmp_image[position] += image[j   + nyMult + ny] * 0.1;
-      if (j > 0)    tmp_image[position] += image[j-1 + nyMult] * 0.1;
-      if (j < ny-1) tmp_image[position] += image[j+1 + nyMult] * 0.1;
+      tmp_image[position] = image[j+i*ny] * 0.6;
+      if (i > 0)    tmp_image[j+i*ny] += image[j  +(i-1)*ny] * 0.1;
+      if (i < nx-1) tmp_image[j+i*ny] += image[j  +(i+1)*ny] * 0.1;
+      if (j > 0)    tmp_image[j+i*ny] += image[j-1+i*ny] * 0.1;
+      if (j < ny-1) tmp_image[j+i*ny] += image[j+1+i*ny] * 0.1;
     }
   }
 }
 
 // Create the input image
-void init_image(const int nx, const int ny, double *  image, double *  tmp_image) {
+void init_image(unsigned short nx, unsigned short ny, double * restrict  image, double * restrict  tmp_image) {
   // Zero everything
-  for (int j = 0; j < ny; ++j) {
-    for (int i = 0; i < nx; ++i) {
+  for (unsigned short j = 0; j < ny; ++j) {
+    for (unsigned short i = 0; i < nx; ++i) {
       image[j+i*ny] = 0.0;
       tmp_image[j+i*ny] = 0.0;
     }
@@ -92,7 +87,7 @@ void init_image(const int nx, const int ny, double *  image, double *  tmp_image
 }
 
 // Routine to output the image in Netpbm grayscale binary image format
-void output_image(const char * file_name, const int nx, const int ny, double *image) {
+void output_image(const char * file_name, unsigned short nx, unsigned short ny, double * restrict  image) {
 
   // Open output file
   FILE *fp = fopen(file_name, "w");
