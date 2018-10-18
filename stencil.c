@@ -51,60 +51,64 @@ int main(int argc, char *argv[]) {
 
 void stencil(unsigned short nx, unsigned short ny, double * restrict  image, double * restrict  tmp_image) {
 
-  tmp_image[0] = image[0] * 0.6;                     //order of each of these sections could matter with respect to caching
-  tmp_image[0] += image[1]* 0.1;
-  tmp_image[0] += image[nx]* 0.1;
+  //topLeft
+  tmp_image[0] = image[0] * 0.6f;                     //order of each of these sections could matter with respect to caching
+  tmp_image[0] += image[1]* 0.1f;
+  tmp_image[0] += image[nx]* 0.1f;
 
-  tmp_image[nx-1] = image[nx-1] * 0.6;
-  tmp_image[nx-1] += image[nx-2]* 0.1;
-  tmp_image[nx-1] += image[(nx-1)+nx]* 0.1;
+  //topRight
+  tmp_image[nx-1] = image[nx-1] * 0.6f;
+  tmp_image[nx-1] += image[nx-2]* 0.1f;
+  tmp_image[nx-1] += image[(nx-1)+nx]* 0.1f;
 
-  tmp_image[nx*(nx-1)] = image[nx*(nx-1)] * 0.6;
-  tmp_image[nx*(nx-1)] += image[nx*(nx-1)+1]* 0.1;
-  tmp_image[nx*(nx-1)] += image[nx*(nx-1)-nx]* 0.1;
+  //bottomLeft
+  tmp_image[nx*(nx-1)] = image[nx*(nx-1)] * 0.6f;
+  tmp_image[nx*(nx-1)] += image[nx*(nx-1)+1]* 0.1f;
+  tmp_image[nx*(nx-1)] += image[nx*(nx-1)-nx]* 0.1f;
 
-  tmp_image[(nx*nx)-1] = image[(nx*nx)-1] * 0.6;
-  tmp_image[(nx*nx)-1] += image[(nx*nx)-2]* 0.1;
-  tmp_image[(nx*nx)-1] += image[(nx*nx)-nx]* 0.1;
+  //bottomRight
+  tmp_image[(nx*nx)-1] = image[(nx*nx)-1] * 0.6f;
+  tmp_image[(nx*nx)-1] += image[(nx*nx)-2]* 0.1f;
+  tmp_image[(nx*nx)-1] += image[(nx*nx)-nx]* 0.1f;
 
   for(unsigned short leftEdge = 1; leftEdge < ny-1; leftEdge++){
-    tmp_image[nx*leftEdge] = image[nx*leftEdge] * 0.6;
-    tmp_image[nx*leftEdge] += image[nx*leftEdge + 1]* 0.1;
-    tmp_image[nx*leftEdge] += image[nx*leftEdge + nx]* 0.1;
-    tmp_image[nx*leftEdge] += image[nx*leftEdge - nx]*0.1;
+    tmp_image[nx*leftEdge] = image[nx*leftEdge] * 0.6f;
+    tmp_image[nx*leftEdge] += image[nx*leftEdge + 1]* 0.1f;
+    tmp_image[nx*leftEdge] += image[nx*leftEdge + nx]* 0.1f;
+    tmp_image[nx*leftEdge] += image[nx*leftEdge - nx]*0.1f;
   }
 
   //unsigned short rightPixel = nx+(nx-1);
   for(unsigned short rightEdge = 1; rightEdge < ny-1; rightEdge++){
-    tmp_image[rightEdge*nx+(nx-1)] = image[rightEdge*nx+(nx-1)] * 0.6;
-    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) - 1]* 0.1;
-    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) + nx]* 0.1;
-    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) - nx]*0.1;
+    tmp_image[rightEdge*nx+(nx-1)] = image[rightEdge*nx+(nx-1)] * 0.6f;
+    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) - 1]* 0.1f;
+    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) + nx]* 0.1f;
+    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) - nx]*0.1f;
   }
 
   for(unsigned short topEdge = 1; topEdge < nx-1; topEdge++){
-    tmp_image[topEdge] = image[topEdge] * 0.6;
-    tmp_image[topEdge] += image[topEdge + 1]* 0.1;
-    tmp_image[topEdge] += image[topEdge - 1]* 0.1;
-    tmp_image[topEdge] += image[topEdge + nx]*0.1;
+    tmp_image[topEdge] = image[topEdge] * 0.6f;
+    tmp_image[topEdge] += image[topEdge + 1]* 0.1f;
+    tmp_image[topEdge] += image[topEdge - 1]* 0.1f;
+    tmp_image[topEdge] += image[topEdge + nx]*0.1f;
   }
 
   for(unsigned short bottomEdge = 1; bottomEdge < ny-1; bottomEdge++){
-    tmp_image[nx*(nx-1)+bottomEdge] = image[nx*(nx-1)+bottomEdge] * 0.6;
-    tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge + 1]* 0.1;
-    tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge - 1]* 0.1;
-    tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge - nx]*0.1;
+    tmp_image[nx*(nx-1)+bottomEdge] = image[nx*(nx-1)+bottomEdge] * 0.6f;
+    tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge + 1]* 0.1f;
+    tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge - 1]* 0.1f;
+    tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge - nx]*0.1f;
   }
 
 
   for (unsigned short i = 1; i < nx-1; ++i) {
     for (unsigned short j = 1; j < ny-1; ++j) {
 
-      tmp_image[j+i*ny] = image[j+i*ny] * 0.6;
-      if (i > 0)    tmp_image[j+i*ny] += image[j  +(i-1)*ny] * 0.1;
-      if (i < nx-1) tmp_image[j+i*ny] += image[j  +(i+1)*ny] * 0.1;
-      if (j > 0)    tmp_image[j+i*ny] += image[j-1+i*ny] * 0.1;
-      if (j < ny-1) tmp_image[j+i*ny] += image[j+1+i*ny] * 0.1;
+      tmp_image[j+i*ny] = image[j+i*ny] * 0.6f;
+      tmp_image[j+i*ny] += image[j  +(i-1)*ny] * 0.1f;
+      tmp_image[j+i*ny] += image[j  +(i+1)*ny] * 0.1f;
+      tmp_image[j+i*ny] += image[j-1+i*ny] * 0.1f;
+      tmp_image[j+i*ny] += image[j+1+i*ny] * 0.1f;
     }
   }
 }
