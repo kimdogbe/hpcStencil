@@ -64,7 +64,7 @@ void stencil(unsigned short nx, unsigned short ny, float * restrict  image, floa
   //bottomLeft
   tmp_image[nx*(nx-1)] = image[nx*(nx-1)] * 0.6f;
   tmp_image[nx*(nx-1)] += image[nx*(nx-1)+1]* 0.1f;
-  tmp_image[nx*(nx-1)] += image[nx*(nx-2)]* 0.1f;
+  tmp_image[nx*(nx-1)] += image[nx*(nx-1)-nx]* 0.1f;
 
   //bottomRight
   tmp_image[(nx*nx)-1] = image[(nx*nx)-1] * 0.6f;
