@@ -71,33 +71,33 @@ void stencil(unsigned short nx, unsigned short ny, float * restrict  image, floa
   tmp_image[(nx*nx)-1] += image[(nx*nx)-2]* 0.1f;
   tmp_image[(nx*nx)-1] += image[(nx*nx)-nx]* 0.1f;
 
-  for(unsigned short topEdge = 1; topEdge < nx-1; topEdge++){
+  for(unsigned short topEdge = 1; topEdge < nx-1; ++topEdge){
     tmp_image[topEdge] = image[topEdge] * 0.6f;
     tmp_image[topEdge] += image[topEdge + nx]* 0.1f;
     tmp_image[topEdge] += image[topEdge - 1]* 0.1f;
-    tmp_image[topEdge] += image[topEdge + 1]*0.1f;
+    tmp_image[topEdge] += image[topEdge + 1]* 0.1f;
   }
 
-  for(unsigned short bottomEdge = 1; bottomEdge < nx-1; bottomEdge++){
+  for(unsigned short bottomEdge = 1; bottomEdge < nx-1; ++bottomEdge){
     tmp_image[nx*(nx-1)+bottomEdge] = image[nx*(nx-1)+bottomEdge] * 0.6f;
     tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge + 1]* 0.1f;
     tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge - 1]* 0.1f;
-    tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge - nx]*0.1f;
+    tmp_image[nx*(nx-1)+bottomEdge] += image[nx*(nx-1)+bottomEdge - nx]* 0.1f;
   }
 
-  for(unsigned short leftEdge = 1; leftEdge < nx-1; leftEdge++){
+  for(unsigned short leftEdge = 1; leftEdge < nx-1; ++leftEdge){
     tmp_image[nx*leftEdge] = image[nx*leftEdge] * 0.6f;
     tmp_image[nx*leftEdge] += image[nx*leftEdge + 1]* 0.1f;
     tmp_image[nx*leftEdge] += image[nx*leftEdge - nx]* 0.1f;
-    tmp_image[nx*leftEdge] += image[nx*leftEdge + nx]*0.1f;
+    tmp_image[nx*leftEdge] += image[nx*leftEdge + nx]* 0.1f;
   }
 
   //unsigned short rightPixel = nx+(nx-1);
-  for(unsigned short rightEdge = 1; rightEdge < nx-1; rightEdge++){
+  for(unsigned short rightEdge = 1; rightEdge < nx-1; ++rightEdge){
     tmp_image[rightEdge*nx+(nx-1)] = image[rightEdge*nx+(nx-1)] * 0.6f;
     tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) - 1]* 0.1f;
     tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) + nx]* 0.1f;
-    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) - nx]*0.1f;
+    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) - nx]* 0.1f;
   }
 
   for (unsigned short i = 1; i < nx-1; ++i) {
