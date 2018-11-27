@@ -8,7 +8,7 @@
 
 void stencil(unsigned short nx, unsigned short ny, float * restrict  image, float * restrict  tmp_image);
 void init_image(unsigned short nx, unsigned short ny, float * restrict  image, float * restrict  tmp_image);
-void output_image(const char * file_name, unsigned short nx, unsigned short ny, float * restrict  image);
+void output_image(const char * file_name, unsigned short nx, unsigned short ny, float * restrict image);
 double wtime(void);
 
 int main(int argc, char *argv[]) {
@@ -20,9 +20,9 @@ int main(int argc, char *argv[]) {
   }
 
   // Initiliase problem dimensions from command line arguments
-  int nx = atoi(argv[1]);
-  int ny = atoi(argv[2]);
-  int niters = atoi(argv[3]);
+  unsigned short nx = atoi(argv[1]);
+  unsigned short = atoi(argv[2]);
+  unsigned short niters = atoi(argv[3]);
 
   // Allocate the image
   float * restrict image = malloc(sizeof(float)*nx*ny);
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
   // Call the stencil kernel
   double tic = wtime();
-  for (unsigned short t = 0; t < niters; ++t) {
+  for (int t = 0; t < niters; ++t) {
     stencil(nx, ny, image, tmp_image);
     stencil(nx, ny, tmp_image, image);
   }
@@ -49,66 +49,62 @@ int main(int argc, char *argv[]) {
   free(image);
 }
 
-void stencil(unsigned short nx, unsigned short ny, float * restrict  image, float * restrict  tmp_image) {
+void stencil(unsigned short nx, unsigned short ny, float * restrict image, float * restrict tmp_image) {
 
-  //topLeft
   tmp_image[0] = image[0] * 0.6f;                     //order of each of these sections could matter with respect to caching
   tmp_image[0] += image[1]* 0.1f;
   tmp_image[0] += image[nx]* 0.1f;
 
-  //topRight
   tmp_image[nx-1] = image[nx-1] * 0.6f;
   tmp_image[nx-1] += image[nx-2]* 0.1f;
   tmp_image[nx-1] += image[(nx-1)+nx]* 0.1f;
 
-  //bottomLeft
-  tmp_image[nx*(ny-1)] = image[nx*(ny-1)] * 0.6f;
-  tmp_image[nx*(ny-1)] += image[nx*(ny-1)+1]* 0.1f;
-  tmp_image[nx*(ny-1)] += image[nx*(ny-1)-nx]* 0.1f;
+  tmp_image[nx*(nx-1)] = image[nx*(nx-1)] * 0.6f;
+  tmp_image[nx*(nx-1)] += image[nx*(nx-1)+1]* 0.1f;
+  tmp_image[nx*(nx-1)] += image[nx*(nx-1)-nx]* 0.1f;
 
-  //bottomRight
-  tmp_image[(nx*ny)-1] = image[(nx*ny)-1] * 0.6f;
-  tmp_image[(nx*ny)-1] += image[(nx*ny)-2]* 0.1f;
-  tmp_image[(nx*ny)-1] += image[(nx*ny)-nx]* 0.1f;
+  tmp_image[(nx*nx)-1] = image[(nx*nx)-1] * 0.6f;
+  tmp_image[(nx*nx)-1] += image[(nx*nx)-2]* 0.1f;
+  tmp_image[(nx*nx)-1] += image[(nx*nx)-nx]* 0.1f;
 
   for(int leftEdge = 1; leftEdge < ny-1; leftEdge++){
-    tmp_image[nx*leftEdge] = image[nx*leftEdge] * 0.6f;
-    tmp_image[nx*leftEdge] += image[nx*leftEdge + 1]* 0.1f;
-    tmp_image[nx*leftEdge] += image[nx*leftEdge + nx]* 0.1f;
-    tmp_image[nx*leftEdge] += image[nx*leftEdge - nx]*0.1f;
+    tmp_image[nx*leftEdge] = image[nx*leftEdge] * 0.6f
+                            + image[nx*leftEdge + 1]* 0.1f
+                            + image[nx*leftEdge + nx]* 0.1f
+                            + image[nx*leftEdge - nx]* 0.1f;
   }
 
   //unsigned short rightPixel = nx+(nx-1);
   for(int rightEdge = 1; rightEdge < ny-1; rightEdge++){
-    tmp_image[rightEdge*nx+(nx-1)] = image[rightEdge*nx+(nx-1)] * 0.6f;
-    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) - 1]* 0.1f;
-    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) + nx]* 0.1f;
-    tmp_image[rightEdge*nx+(nx-1)] += image[rightEdge*nx+(nx-1) - nx]*0.1f;
+    tmp_image[rightEdge*nx+(nx-1)] = image[rightEdge*nx+(nx-1)] * 0.6f
+                                    + image[rightEdge*nx+(nx-1) - 1]* 0.1f
+                                    + image[rightEdge*nx+(nx-1) + nx]* 0.1f
+                                    + image[rightEdge*nx+(nx-1) - nx]*0.1f;
   }
 
   for(int topEdge = 1; topEdge < nx-1; topEdge++){
     tmp_image[topEdge] = image[topEdge] * 0.6f;
-    tmp_image[topEdge] += image[topEdge + 1]* 0.1f;
-    tmp_image[topEdge] += image[topEdge - 1]* 0.1f;
-    tmp_image[topEdge] += image[topEdge + nx]*0.1f;
+                      + image[topEdge + 1]* 0.1f
+                      + image[topEdge - 1]* 0.1f
+                      + image[topEdge + nx]*0.1f;
   }
 
-  for(int bottomEdge = 1; bottomEdge < nx-1; bottomEdge++){
-    tmp_image[nx*(ny-1)+bottomEdge] = image[nx*(ny-1)+bottomEdge] * 0.6f;
-    tmp_image[nx*(ny-1)+bottomEdge] += image[nx*(ny-1)+bottomEdge + 1]* 0.1f;
-    tmp_image[nx*(ny-1)+bottomEdge] += image[nx*(ny-1)+bottomEdge - 1]* 0.1f;
-    tmp_image[nx*(ny-1)+bottomEdge] += image[nx*(ny-1)+bottomEdge - nx]*0.1f;
+  for(int bottomEdge = 1; bottomEdge < ny-1; bottomEdge++){
+    tmp_image[nx*(nx-1)+bottomEdge] = image[nx*(nx-1)+bottomEdge] * 0.6f
+                                    + image[nx*(nx-1)+bottomEdge + 1]* 0.1f
+                                    + image[nx*(nx-1)+bottomEdge - 1]* 0.1f
+                                    + image[nx*(nx-1)+bottomEdge - nx]*0.1f;
   }
 
 
   for (int i = 1; i < nx-1; ++i) {
     for (int j = 1; j < ny-1; ++j) {
 
-      tmp_image[j+i*ny] = image[j+i*ny] * 0.6f;
-      tmp_image[j+i*ny] += image[j  +(i-1)*ny] * 0.1f;
-      tmp_image[j+i*ny] += image[j  +(i+1)*ny] * 0.1f;
-      tmp_image[j+i*ny] += image[j-1+i*ny] * 0.1f;
-      tmp_image[j+i*ny] += image[j+1+i*ny] * 0.1f;
+      tmp_image[j+i*ny] = image[j+i*ny] * 0.6f
+                        + image[j  +(i-1)*ny] * 0.1f
+                        + image[j  +(i+1)*ny] * 0.1f
+                        + image[j-1+i*ny] * 0.1f
+                        + image[j+1+i*ny] * 0.1f;
     }
   }
 }
@@ -116,20 +112,20 @@ void stencil(unsigned short nx, unsigned short ny, float * restrict  image, floa
 // Create the input image
 void init_image(unsigned short nx, unsigned short ny, float * restrict  image, float * restrict  tmp_image) {
   // Zero everything
-  for (unsigned short j = 0; j < ny; ++j) {
-    for (unsigned short i = 0; i < nx; ++i) {
-      image[j+i*ny] = 0.0f;
-      tmp_image[j+i*ny] = 0.0f;
+  for (int j = 0; j < ny; ++j) {
+    for (int i = 0; i < nx; ++i) {
+      image[j+i*ny] = 0.0;
+      tmp_image[j+i*ny] = 0.0;
     }
   }
 
   // Checkerboard
-  for (unsigned short j = 0; j < 8; ++j) {
-    for (unsigned short i = 0; i < 8; ++i) {
-      for (unsigned short jj = j*ny/8; jj < (j+1)*ny/8; ++jj) {
-        for (unsigned short ii = i*nx/8; ii < (i+1)*nx/8; ++ii) {
+  for (int j = 0; j < 8; ++j) {
+    for (int i = 0; i < 8; ++i) {
+      for (int jj = j*ny/8; jj < (j+1)*ny/8; ++jj) {
+        for (int ii = i*nx/8; ii < (i+1)*nx/8; ++ii) {
           if ((i+j)%2)
-          image[jj+ii*ny] = 100.0f;
+          image[jj+ii*ny] = 100.0;
         }
       }
     }
@@ -137,7 +133,7 @@ void init_image(unsigned short nx, unsigned short ny, float * restrict  image, f
 }
 
 // Routine to output the image in Netpbm grayscale binary image format
-void output_image(const char * file_name, unsigned short nx, unsigned short ny, float * restrict  image) {
+void output_image(const char * file_name, unsigned short nx, unsigned short ny, float * restrict image) {
 
   // Open output file
   FILE *fp = fopen(file_name, "w");
@@ -152,18 +148,18 @@ void output_image(const char * file_name, unsigned short nx, unsigned short ny, 
   // Calculate maximum value of image
   // This is used to rescale the values
   // to a range of 0-255 for output
-  float maximum = 0.0f;
-  for (unsigned short j = 0; j < ny; ++j) {
-    for (unsigned short i = 0; i < nx; ++i) {
+  double maximum = 0.0;
+  for (int j = 0; j < ny; ++j) {
+    for (int i = 0; i < nx; ++i) {
       if (image[j+i*ny] > maximum)
         maximum = image[j+i*ny];
     }
   }
 
   // Output image, converting to numbers 0-255
-  for (unsigned short j = 0; j < ny; ++j) {
-    for (unsigned short i = 0; i < nx; ++i) {
-      fputc((char)(255.0f*image[j+i*ny]/maximum), fp);
+  for (int j = 0; j < ny; ++j) {
+    for (int i = 0; i < nx; ++i) {
+      fputc((char)(255.0*image[j+i*ny]/maximum), fp);
     }
   }
 
