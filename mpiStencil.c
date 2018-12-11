@@ -95,124 +95,173 @@ int main(int argc, char *argv[]) {
     //stencil(nx, ny, tmp_image, image);
     stencil(ranknx, nyWhole, rankImg, tmp_rankImg, myrank, nnodes);
 
-    if(even){
-      if(myrank != 0){
-        MPI_Send(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
-        /*for(int i = ranknx; i < 2*ranknx; i++){
-          // printf("1) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank-1 );
-          MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
-        }*/
-      }
-      if(myrank != nnodes-1){
-        MPI_Send(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
-        /*for(int i = ranknx*nyWhole-2*ranknx; i < ranknx*nyWhole-ranknx; i++){
-          // printf("2) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank+1);
-          MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
-        }*/
-      }
-      if(myrank != nnodes-1){
-        MPI_Recv(&tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-        /*for(int i = ranknx*nyWhole-ranknx; i < ranknx*nyWhole; i++){
-          // printf("3) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank+1);
-          MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-        }*/
-      }
-      if(myrank != 0){
-        MPI_Recv(&tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-        /*for(int i = 0; i < ranknx; i++){
-          // printf("4) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank-1);
-          MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-        }*/
-      }
-
-    }else{
-      if(myrank != nnodes-1){
-        MPI_Recv(&tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-        /*for(int i = ranknx*nyWhole-ranknx; i < ranknx*nyWhole; i++){
-          // printf("5) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank+1);
-          MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-        }*/
-      }
-      MPI_Recv(&tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-      /*for(int i = 0; i < ranknx; i++){
-        // printf("6) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank-1);
-        MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-      }*/
-
-      MPI_Send(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
-      /*for(int i = ranknx; i < 2*ranknx; i++){
-        //printf("7) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank-1 );
-        MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
-      }*/
-
-      if(myrank != nnodes-1){
-        MPI_Send(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
-        /*for(int i = ranknx*nyWhole-2*ranknx; i < ranknx*nyWhole-ranknx; i++){
-          //printf("8) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank+1);
-          MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
-        }*/
-      }
+    //if(even){
+    if(myrank != 0){
+      MPI_Sendrecv(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
+                    &tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
     }
+
+
+      // if(myrank != 0){
+      //   MPI_Send(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
+      //   /*for(int i = ranknx; i < 2*ranknx; i++){
+      //     // printf("1) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank-1 );
+      //     MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
+      //   }*/
+      // }
+      // if(myrank != 0){
+      //   MPI_Recv(&tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+      //   /*for(int i = 0; i < ranknx; i++){
+      //     // printf("4) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank-1);
+      //     MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+      //   }*/
+      // }
+      if(myrank != nnodes-1){
+        MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
+                      &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+      }
+
+
+      // if(myrank != nnodes-1){
+      //   MPI_Send(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
+      //   /*for(int i = ranknx*nyWhole-2*ranknx; i < ranknx*nyWhole-ranknx; i++){
+      //     // printf("2) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank+1);
+      //     MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
+      //   }*/
+      // }
+      // if(myrank != nnodes-1){
+      //   MPI_Recv(&tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+      //   /*for(int i = ranknx*nyWhole-ranknx; i < ranknx*nyWhole; i++){
+      //     // printf("3) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank+1);
+      //     MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+      //   }*/
+      // }
+
+
+    //}else{
+    if(myrank != nnodes-1){
+      MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
+                    &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+    }
+
+
+      // if(myrank != nnodes-1){
+      //   MPI_Recv(&tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+      //   /*for(int i = ranknx*nyWhole-ranknx; i < ranknx*nyWhole; i++){
+      //     // printf("5) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank+1);
+      //     MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+      //   }*/
+      // }
+      // if(myrank != nnodes-1){
+      //   MPI_Send(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
+      //   /*for(int i = ranknx*nyWhole-2*ranknx; i < ranknx*nyWhole-ranknx; i++){
+      //     //printf("8) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank+1);
+      //     MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
+      //   }*/
+      // }
+      if(myrank != 0){
+        MPI_Sendrecv(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
+                      &tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+      }
+
+
+      // MPI_Recv(&tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+      // /*for(int i = 0; i < ranknx; i++){
+      //   // printf("6) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank-1);
+      //   MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+      // }*/
+      //
+      // MPI_Send(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
+      // /*for(int i = ranknx; i < 2*ranknx; i++){
+      //   //printf("7) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank-1 );
+      //   MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
+      // }*/
+    //}
     stencil(ranknx, nyWhole, tmp_rankImg, rankImg, myrank, nnodes);
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-    if(even){
-      if(myrank != 0){
-        MPI_Send(&rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
-        /*for(int i = ranknx; i < 2*ranknx; i++){
-          // printf("1) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank-1 );
-          MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
-        }*/
-      }
-      if(myrank != nnodes-1){
-        MPI_Send(&rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
-        /*for(int i = ranknx*nyWhole-2*ranknx; i < ranknx*nyWhole-ranknx; i++){
-          // printf("2) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank+1);
-          MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
-        }*/
-      }
-      if(myrank != nnodes-1){
-        MPI_Recv(&rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-        /*for(int i = ranknx*nyWhole-ranknx; i < ranknx*nyWhole; i++){
-          // printf("3) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank+1);
-          MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-        }*/
-      }
-      if(myrank != 0){
-        MPI_Recv(&rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-        /*for(int i = 0; i < ranknx; i++){
-          // printf("4) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank-1);
-          MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-        }*/
-      }
+//if(even){
+if(myrank != 0){
+  MPI_Sendrecv(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
+                &tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+}
 
-    }else{
-      if(myrank != nnodes-1){
-        MPI_Recv(&rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-        /*for(int i = ranknx*nyWhole-ranknx; i < ranknx*nyWhole; i++){
-          // printf("5) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank+1);
-          MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-        }*/
-      }
-      MPI_Recv(&rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-      /*for(int i = 0; i < ranknx; i++){
-        // printf("6) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank-1);
-        MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-      }*/
 
-      MPI_Send(&rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
-      /*for(int i = ranknx; i < 2*ranknx; i++){
-        //printf("7) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank-1 );
-        MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
-      }*/
-      if(myrank != nnodes-1){
-        MPI_Send(&rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
-        /*for(int i = ranknx*nyWhole-2*ranknx; i < ranknx*nyWhole-ranknx; i++){
-          //printf("8) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank+1);
-          MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
-        }*/
-      }
-    }
+  // if(myrank != 0){
+  //   MPI_Send(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
+  //   /*for(int i = ranknx; i < 2*ranknx; i++){
+  //     // printf("1) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank-1 );
+  //     MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
+  //   }*/
+  // }
+  // if(myrank != 0){
+  //   MPI_Recv(&tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+  //   /*for(int i = 0; i < ranknx; i++){
+  //     // printf("4) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank-1);
+  //     MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+  //   }*/
+  // }
+  if(myrank != nnodes-1){
+    MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
+                  &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+  }
+
+
+  // if(myrank != nnodes-1){
+  //   MPI_Send(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
+  //   /*for(int i = ranknx*nyWhole-2*ranknx; i < ranknx*nyWhole-ranknx; i++){
+  //     // printf("2) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank+1);
+  //     MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
+  //   }*/
+  // }
+  // if(myrank != nnodes-1){
+  //   MPI_Recv(&tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+  //   /*for(int i = ranknx*nyWhole-ranknx; i < ranknx*nyWhole; i++){
+  //     // printf("3) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank+1);
+  //     MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+  //   }*/
+  // }
+
+
+//}else{
+if(myrank != nnodes-1){
+  MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
+                &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+}
+
+
+  // if(myrank != nnodes-1){
+  //   MPI_Recv(&tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+  //   /*for(int i = ranknx*nyWhole-ranknx; i < ranknx*nyWhole; i++){
+  //     // printf("5) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank+1);
+  //     MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+  //   }*/
+  // }
+  // if(myrank != nnodes-1){
+  //   MPI_Send(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
+  //   /*for(int i = ranknx*nyWhole-2*ranknx; i < ranknx*nyWhole-ranknx; i++){
+  //     //printf("8) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank+1);
+  //     MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
+  //   }*/
+  // }
+  if(myrank != 0){
+    MPI_Sendrecv(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
+                  &tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+  }
+
+
+  // MPI_Recv(&tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+  // /*for(int i = 0; i < ranknx; i++){
+  //   // printf("6) Rank %d recieved %0.1lf from rank %d\n", myrank, rankImg[i], myrank-1);
+  //   MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+  // }*/
+  //
+  // MPI_Send(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
+  // /*for(int i = ranknx; i < 2*ranknx; i++){
+  //   //printf("7) Rank %d sent %0.1lf to rank %d\n", myrank, rankImg[i], myrank-1 );
+  //   MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
+  // }*/
+//}
   }
 
   if(myrank == 0){
