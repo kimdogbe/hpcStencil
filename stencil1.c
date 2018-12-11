@@ -4,7 +4,7 @@
 #include <sys/time.h>
 
 // Define output file name
-#define OUTPUT_FILE "stencil.pgm"
+#define OUTPUT_FILE "stencilTest.pgm"
 
 void stencil(const int nx, const int ny, double *  image, double *  tmp_image);
 void init_image(const int nx, const int ny, double *  image, double *  tmp_image);
