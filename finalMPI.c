@@ -38,111 +38,88 @@ int main(int argc, char *argv[]) {
   float ny = atoi(argv[2]);
   int niters = atoi(argv[3]);
 
-  int ranknx = nx;
-  int rankny = ceil(ny/nnodes);
-  int nyWhole = rankny + 2;
-  //testing MPI
-  int rankStart, rankEnd;
+  int ranknx = ceil(ny/nnodes);
+  int rankny = nx;
+  int nxWhole = ranknx + 2;
 
   if(myrank == 0){
-    nyWhole -= 1;
-    rankStart = 0;
-  }else{
-    rankStart = myrank * (rankny*ranknx) - ranknx;
+    nxWhole -= 1;
   }
 
-  if(myrank == nnodes-1){
-    nyWhole = ny - ((nnodes-1)*rankny)+1;
-    rankEnd = nx*ny-1;
-    //rankny = ((rankEnd+1) - rankStart) / ranknx;
-  }else{
-    rankEnd = ((myrank+1) * (ranknx*rankny)) - 1 + ranknx;
+  if(myrank == nnodes -1 ){
+    nxWhole = nx - ((nnodes-1)*rankny)+1;
   }
 
   // Allocate the image
   float * restrict image = malloc(sizeof(float)*nx*ny);
   float * restrict tmp_image = malloc(sizeof(float)*nx*ny);
 
-  float * restrict rankImg = malloc(sizeof(float)*ranknx*nyWhole);
-  float * restrict tmp_rankImg = malloc(sizeof(float)*ranknx*nyWhole);
+  float * restrict rankImg = malloc(sizeof(float)*rankny*nxWhole);
+  float * restrict tmp_rankImg = malloc(sizeof(float)*rankny*nxWhole);
 
-  printf("Rank = %d, Rank Start = %d, Rank End = %d, nx = %d, ny = %d, Allocated mem = %d\n"
-          , myrank, rankStart, rankEnd, ranknx, nyWhole, ranknx*nyWhole);
-
-  // Set the input image
   init_image(nx, ny, image, tmp_image);
 
-  //set up each ranks section of the image
   if(myrank == 0){
-    for(int i = 0; i < ranknx*nyWhole; i++){
+    for(int i = 0; i < rankny*nxWhole; i++){
       rankImg[i] = image[i];
       tmp_rankImg[i] = image[i];
     }
-  //}else if(myrank == nnodes-1){
-    //rankImg[i] = image[]
   }else{
-    for(int i = 0; i < ranknx*nyWhole; i++){
-      rankImg[i] = image[myrank*ranknx*rankny-ranknx+i];
-      tmp_rankImg[i] = image[myrank*ranknx*rankny-ranknx+i];
+    for(int i = 0; i < rankny*nxWhole; i++){
+      rankImg[i] = image[(myrank*rankny*ranknx-rankny)+i];
+      tmp_rankImg[i] = image[(myrank*rankny*ranknx-rankny)+i];
     }
   }
-  /*if(myrank == nnodes-1){
-    rankny = ny - ((nnodes-1)*rankny);
-  }*/
 
-  //int even = myrank%2 == 0 ? 1 : 0;   //check if rank is even
+  if(myrank == nnodes-1){
+    ranknx = nx - ((nnodes-1)*ranknx);
+  }
 
-  // Call the stencil kernel
+////////////////////////////////////////
   double tic = wtime();
   for (unsigned short t = 0; t < niters; ++t) {
 
-    stencil(ranknx, nyWhole, rankImg, tmp_rankImg);
-    //if(even){
+    stencil(nxWhole, rankny, rankImg, tmp_rankImg);
+
     if(myrank > 0){
-      MPI_Sendrecv(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
-                    &tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(&tmp_rankImg[rankny], rankny, MPI_FLOAT, myrank-1, tag,
+                    &tmp_rankImg[0], rankny, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
     }
 
     if(myrank < nnodes-1){
-      MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
-                    &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(&tmp_rankImg[rankny*nxWhole-(2*rankny)], rankny, MPI_FLOAT, myrank+1, tag,
+                    &tmp_rankImg[rankny*nxWhole], rankny, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
     }
-
-
-    stencil(ranknx, nyWhole, tmp_rankImg, rankImg);
-////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////
+    stencil(nxWhole, rankny, tmp_rankImg, rankImg);
 
     if(myrank > 0){
-      MPI_Sendrecv(&rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
-                    &rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(&rankImg[rankny], rankny, MPI_FLOAT, myrank-1, tag,
+                    &rankImg[0], rankny, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
     }
 
     if(myrank < nnodes-1){
-      MPI_Sendrecv(&rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
-                    &rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(&rankImg[rankny*nxWhole-(2*rankny)], rankny, MPI_FLOAT, myrank+1, tag,
+                    &rankImg[rankny*nxWhole], rankny, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
     }
-
-
-
   }
   double toc = wtime();
 
   if(myrank == 0){
-    for(int i = 0; i < ranknx*rankny; i++){
+    for(int i = 0; i < rankny*ranknx; i++){
       image[i] = rankImg[i];
     }
 
     for(int n = 1; n < nnodes; n++){
-      for(int y = 0; y < rankny; y++){
-        MPI_Recv(&image[n*(ranknx*rankny) + y*ranknx], ranknx, MPI_FLOAT, n, tag, MPI_COMM_WORLD, &status);
+      for(int x = 0; x < ranknx; x++){
+        MPI_Recv(&image[n*(rankny*ranknx)+ x*rankny], rankny, MPI_FLOAT, n, tag, MPI_COMM_WORLD, &status);
       }
     }
   }else{
-    for(int y = 1; y < nyWhole; y++){
-      MPI_Send(&rankImg[y*ranknx], ranknx, MPI_FLOAT, 0, tag, MPI_COMM_WORLD);
+    for(int x = 1; x < nxWhole; x++){
+      MPI_Send(&rankImg[x*rankny], rankny, MPI_FLOAT, 0, tag, MPI_COMM_WORLD);
     }
   }
-
   printf("Rank %d image stiched, time = %lf\n", myrank, toc-tic);
 
   if(myrank == 0){
@@ -159,9 +136,9 @@ int main(int argc, char *argv[]) {
   free(tmp_rankImg);
 
   MPI_Finalize();
-}
+  }
 
-void stencil(unsigned short nx, unsigned short ny, float * restrict  image, float * restrict  tmp_image) {
+  void stencil(unsigned short nx, unsigned short ny, float * restrict  image, float * restrict  tmp_image) {
 
     //if(rank == 0){
       //topLeft
@@ -228,10 +205,10 @@ void stencil(unsigned short nx, unsigned short ny, float * restrict  image, floa
       tmp_image[j+i*nx] += image[(j+i*nx) - nx] * 0.1f;
     }
   }
-}
+  }
 
-// Create the input image
-void init_image(unsigned short nx, unsigned short ny, float * restrict  image, float * restrict  tmp_image) {
+  // Create the input image
+  void init_image(unsigned short nx, unsigned short ny, float * restrict  image, float * restrict  tmp_image) {
   // Zero everything
   for (unsigned short j = 0; j < ny; ++j) {
     for (unsigned short i = 0; i < nx; ++i) {
@@ -251,10 +228,10 @@ void init_image(unsigned short nx, unsigned short ny, float * restrict  image, f
       }
     }
   }
-}
+  }
 
-// Routine to output the image in Netpbm grayscale binary image format
-void output_image(const char * file_name, unsigned short nx, unsigned short ny, float * restrict  image) {
+  // Routine to output the image in Netpbm grayscale binary image format
+  void output_image(const char * file_name, unsigned short nx, unsigned short ny, float * restrict  image) {
 
   // Open output file
   FILE *fp = fopen(file_name, "w");
@@ -287,11 +264,11 @@ void output_image(const char * file_name, unsigned short nx, unsigned short ny, 
   // Close the file
   fclose(fp);
 
-}
+  }
 
-// Get the current time in seconds since the Epoch
-double wtime(void) {
+  // Get the current time in seconds since the Epoch
+  double wtime(void) {
   struct timeval tv;
   gettimeofday(&tv, NULL);
   return tv.tv_sec + tv.tv_usec*1e-6;
-}
+  }
