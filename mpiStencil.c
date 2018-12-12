@@ -96,11 +96,14 @@ int main(int argc, char *argv[]) {
     stencil(ranknx, nyWhole, rankImg, tmp_rankImg, myrank, nnodes);
 
     //if(even){
+    if(myrank != nnodes-1){
+      MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
+                    &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
+    }
     if(myrank != 0){
       MPI_Sendrecv(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
                     &tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
     }
-
 
       // if(myrank != 0){
       //   MPI_Send(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
@@ -116,11 +119,6 @@ int main(int argc, char *argv[]) {
       //     MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
       //   }*/
       // }
-      if(myrank != nnodes-1){
-        MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
-                      &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-      }
-
 
       // if(myrank != nnodes-1){
       //   MPI_Send(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
@@ -137,13 +135,7 @@ int main(int argc, char *argv[]) {
       //   }*/
       // }
 
-
     //}else{
-    if(myrank != nnodes-1){
-      MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
-                    &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-    }
-
 
       // if(myrank != nnodes-1){
       //   MPI_Recv(&tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
@@ -159,11 +151,6 @@ int main(int argc, char *argv[]) {
       //     MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
       //   }*/
       // }
-      if(myrank != 0){
-        MPI_Sendrecv(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
-                      &tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-      }
-
 
       // MPI_Recv(&tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
       // /*for(int i = 0; i < ranknx; i++){
@@ -181,11 +168,15 @@ int main(int argc, char *argv[]) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 //if(even){
-if(myrank != 0){
-  MPI_Sendrecv(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
-                &tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+if(myrank != nnodes-1){
+  MPI_Sendrecv(&rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
+                &rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
 }
 
+if(myrank != 0){
+  MPI_Sendrecv(&rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
+                &rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
+}
 
   // if(myrank != 0){
   //   MPI_Send(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD);
@@ -201,10 +192,6 @@ if(myrank != 0){
   //     MPI_Recv(&rankImg[i], 1, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
   //   }*/
   // }
-  if(myrank != nnodes-1){
-    MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
-                  &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-  }
 
 
   // if(myrank != nnodes-1){
@@ -224,11 +211,6 @@ if(myrank != 0){
 
 
 //}else{
-if(myrank != nnodes-1){
-  MPI_Sendrecv(&tmp_rankImg[ranknx*nyWhole-(2*ranknx)], ranknx, MPI_FLOAT, myrank+1, tag,
-                &tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
-}
-
 
   // if(myrank != nnodes-1){
   //   MPI_Recv(&tmp_rankImg[ranknx*nyWhole-ranknx], ranknx, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD, &status);
@@ -244,11 +226,6 @@ if(myrank != nnodes-1){
   //     MPI_Send(&rankImg[i], 1, MPI_FLOAT, myrank+1, tag, MPI_COMM_WORLD);
   //   }*/
   // }
-  if(myrank != 0){
-    MPI_Sendrecv(&tmp_rankImg[ranknx], ranknx, MPI_FLOAT, myrank-1, tag,
-                  &tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
-  }
-
 
   // MPI_Recv(&tmp_rankImg[0], ranknx, MPI_FLOAT, myrank-1, tag, MPI_COMM_WORLD, &status);
   // /*for(int i = 0; i < ranknx; i++){
@@ -263,6 +240,8 @@ if(myrank != nnodes-1){
   // }*/
 //}
   }
+  double toc = wtime();
+
 
   if(myrank == 0){
     for(int i = 0; i < ranknx*rankny; i++){
@@ -279,7 +258,6 @@ if(myrank != nnodes-1){
       MPI_Send(&rankImg[y*ranknx], ranknx, MPI_FLOAT, 0, tag, MPI_COMM_WORLD);
     }
   }
-  double toc = wtime();
 
   printf("Rank %d image stiched, time = %lf\n", myrank, toc-tic);
 
@@ -301,39 +279,45 @@ if(myrank != nnodes-1){
 
 void stencil(unsigned short nx, unsigned short ny, float * restrict  image, float * restrict  tmp_image, int rank, int nnodes) {
 
-    //topLeft
-    tmp_image[0] = image[0] * 0.6f;                     //order of each of these sections could matter with respect to caching
-    tmp_image[0] += image[1]* 0.1f;
-    tmp_image[0] += image[nx]* 0.1f;
+    //if(rank == 0){
+      //topLeft
+      tmp_image[0] = image[0] * 0.6f;                     //order of each of these sections could matter with respect to caching
+      tmp_image[0] += image[1]* 0.1f;
+      tmp_image[0] += image[nx]* 0.1f;
 
-    //topRight
-    tmp_image[nx-1] = image[nx-1] * 0.6f;
-    tmp_image[nx-1] += image[nx-2]* 0.1f;
-    tmp_image[nx-1] += image[(2*nx)-1]* 0.1f;
+      //topRight
+      tmp_image[nx-1] = image[nx-1] * 0.6f;
+      tmp_image[nx-1] += image[nx-2]* 0.1f;
+      tmp_image[nx-1] += image[(2*nx)-1]* 0.1f;
 
-    for(int topEdge = 1; topEdge < nx-1; ++topEdge){
-      tmp_image[topEdge] = image[topEdge] * 0.6f;
-      tmp_image[topEdge] += image[topEdge + 1]* 0.1f;
-      tmp_image[topEdge] += image[topEdge - 1]* 0.1f;
-      tmp_image[topEdge] += image[topEdge + nx]*0.1f;
-    }
+      for(int topEdge = 1; topEdge < nx-1; ++topEdge){
+        tmp_image[topEdge] = image[topEdge] * 0.6f;
+        tmp_image[topEdge] += image[topEdge + 1]* 0.1f;
+        tmp_image[topEdge] += image[topEdge - 1]* 0.1f;
+        tmp_image[topEdge] += image[topEdge + nx]*0.1f;
+      }
+    //}
 
-    //bottomLeft
-    tmp_image[nx*(ny-1)] = image[nx*(ny-1)] * 0.6f;
-    tmp_image[nx*(ny-1)] += image[nx*(ny-1)+1]* 0.1f;
-    tmp_image[nx*(ny-1)] += image[nx*(ny-2)]* 0.1f;
+    //if(rank == nnodes-1){
+      //bottomLeft
+      tmp_image[nx*(ny-1)] = image[nx*(ny-1)] * 0.6f;
+      tmp_image[nx*(ny-1)] += image[nx*(ny-1)+1]* 0.1f;
+      tmp_image[nx*(ny-1)] += image[nx*(ny-2)]* 0.1f;
 
-    //bottomRight
-    tmp_image[(nx*ny)-1] = image[(nx*ny)-1] * 0.6f;
-    tmp_image[(nx*ny)-1] += image[(nx*ny)-2]* 0.1f;
-    tmp_image[(nx*ny)-1] += image[(nx*ny)-(nx+1)]* 0.1f;
+      //bottomRight
+      tmp_image[(nx*ny)-1] = image[(nx*ny)-1] * 0.6f;
+      tmp_image[(nx*ny)-1] += image[(nx*ny)-2]* 0.1f;
+      tmp_image[(nx*ny)-1] += image[(nx*ny)-(nx+1)]* 0.1f;
 
-    for(int bottomEdge = 1; bottomEdge < nx-1; ++bottomEdge){
-      tmp_image[nx*(ny-1)+bottomEdge] = image[nx*(ny-1)+bottomEdge] * 0.6f;
-      tmp_image[nx*(ny-1)+bottomEdge] += image[(nx*(ny-1)+bottomEdge) + 1]* 0.1f;
-      tmp_image[nx*(ny-1)+bottomEdge] += image[(nx*(ny-1)+bottomEdge) - 1]* 0.1f;
-      tmp_image[nx*(ny-1)+bottomEdge] += image[(nx*(ny-1)+bottomEdge) - nx]*0.1f;
-    }
+      for(int bottomEdge = 1; bottomEdge < nx-1; ++bottomEdge){
+        tmp_image[nx*(ny-1)+bottomEdge] = image[nx*(ny-1)+bottomEdge] * 0.6f;
+        tmp_image[nx*(ny-1)+bottomEdge] += image[(nx*(ny-1)+bottomEdge) + 1]* 0.1f;
+        tmp_image[nx*(ny-1)+bottomEdge] += image[(nx*(ny-1)+bottomEdge) - 1]* 0.1f;
+        tmp_image[nx*(ny-1)+bottomEdge] += image[(nx*(ny-1)+bottomEdge) - nx]*0.1f;
+      }
+    //}
+
+
 
   for(int leftEdge = 1; leftEdge < ny-1; ++leftEdge){
     tmp_image[nx*leftEdge] = image[nx*leftEdge] * 0.6f;
