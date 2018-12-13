@@ -82,8 +82,8 @@ int main(int argc, char *argv[]) {
     //rankImg[i] = image[]
   }else{
     for(int i = 0; i < ranknx*nyWhole; i++){
-      rankImg[i] = image[myrank*ranknx*rankny-ranknx+i];
-      tmp_rankImg[i] = image[myrank*ranknx*rankny-ranknx+i];
+      rankImg[i] = image[(myrank*ranknx*rankny-ranknx)+i];
+      tmp_rankImg[i] = image[(myrank*ranknx*rankny-ranknx)+i];
     }
   }
   /*if(myrank == nnodes-1){
@@ -132,10 +132,13 @@ int main(int argc, char *argv[]) {
       image[i] = rankImg[i];
     }
 
-    for(int n = 1; n < nnodes; n++){
+    for(int n = 1; n < nnodes-1; n++){
       for(int y = 0; y < rankny; y++){
         MPI_Recv(&image[n*(ranknx*rankny) + y*ranknx], ranknx, MPI_FLOAT, n, tag, MPI_COMM_WORLD, &status);
       }
+    }
+    for(int yLast = 0; yLast < ny - ((nnodes-1)*rankny); yLast++){
+      MPI_Recv(&image[(nnodes-1)*(ranknx*rankny) + yLast*ranknx], ranknx, MPI_FLOAT, nnodes-1, tag, MPI_COMM_WORLD, &status);
     }
   }else{
     for(int y = 1; y < nyWhole; y++){
